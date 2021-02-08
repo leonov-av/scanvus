@@ -1,2 +1,2 @@
-# savus
-Simple Authenticated Vulnerability Scanner
+# scanvus
+Simple Authenticated Vulnerability Scanner for Linux Hosts
