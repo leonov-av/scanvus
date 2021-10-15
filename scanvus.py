@@ -35,15 +35,15 @@ def get_text_block(target):
 #     "key_path": "key",
 # }
 
-# target = {
-#     "assement_type": "auto_localhost"
-#     "host": "localhost",
-# }
-
 target = {
-    "assement_type": "auto_docker_image",
-    "docker_image": "ubuntu:latest",
+    "assement_type": "auto_localhost",
+    "host": "localhost"
 }
+
+# target = {
+#     "assement_type": "auto_docker_image",
+#     "docker_image": "ubuntu:latest",
+# }
 
 text_block = get_text_block(target)
 os_data = dict()
@@ -53,5 +53,5 @@ os_data['package_list'] = functions_linux_inventory.get_os_packages_from_text_bl
 # os_data['package_list'] = ["apt 1.0.6 amd64","apt-config-icons 0.12.10-2 all"] # DEBUG
 vulners_linux_audit_data = functions_vuln_detects.get_vulners_linux_audit_data(os_data)
 
-vulnerability_report = functions_reports.get_vulnerability_report(target, os_data, vulners_linux_audit_data)
-print(vulnerability_report['report_text'])
+# vulnerability_report = functions_reports.get_vulnerability_report(target, os_data, vulners_linux_audit_data)
+# print(vulnerability_report['report_text'])
