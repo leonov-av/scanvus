@@ -3,10 +3,18 @@ import re
 bash_script = '''
 hostname=`hostname`; 
 is_ubuntu=`cat /etc/os-release | grep "ubuntu"`; 
+is_debian=`cat /etc/os-release | grep "debian"`; 
 is_centos=`cat /etc/os-release | grep "centos"`;
 if [ "$is_ubuntu" != ""  ]; 
 then 
     os_name="ubuntu"; 
+    os_version=`cat /etc/os-release | grep "VERSION_ID=" | awk -F"\\"" '{printf $2}'`; 
+    packages=`dpkg-query -W -f='${Status} ${Package} ${Version} ${Architecture}\\n' | 
+              awk '($1 == "install") && ($2 == "ok") {print $4" "$5" "$6}'`; 
+fi; 
+if [ "$is_debian" != ""  ]; 
+then 
+    os_name="debian"; 
     os_version=`cat /etc/os-release | grep "VERSION_ID=" | awk -F"\\"" '{printf $2}'`; 
     packages=`dpkg-query -W -f='${Status} ${Package} ${Version} ${Architecture}\\n' | 
               awk '($1 == "install") && ($2 == "ok") {print $4" "$5" "$6}'`; 
