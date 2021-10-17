@@ -1,6 +1,6 @@
 import re
 
-bash_script = '''
+linux_audit_bash_script = '''
 hostname=`hostname`; 
 is_ubuntu=`cat /etc/os-release | grep "ubuntu"`; 
 is_debian=`cat /etc/os-release | grep "debian"`; 
@@ -34,6 +34,7 @@ echo "$packages";
 echo "=========  END  =========";
 '''
 
+
 def get_bash_script_oneliner(bash_script):
     oneliner = ""
     for line in bash_script.split("\n"):
@@ -42,12 +43,14 @@ def get_bash_script_oneliner(bash_script):
         oneliner += line + " "
     return oneliner
 
+
 def get_hostname_from_text_block(block):
     hostname = ""
     for line in block.split("\n"):
         if "hostname:" in line:
             hostname = line.split(":")[1]
     return hostname
+
 
 def get_os_name_from_text_block(block):
     os_name = ""
@@ -56,12 +59,14 @@ def get_os_name_from_text_block(block):
             os_name = line.split(":")[1]
     return os_name
 
+
 def get_os_version_from_text_block(block):
     os_version = ""
     for line in block.split("\n"):
         if "os_version:" in line:
             os_version = line.split(":")[1]
     return os_version
+
 
 def get_os_packages_from_text_block(block):
     os_packages = list()
@@ -74,3 +79,22 @@ def get_os_packages_from_text_block(block):
         if "=== packages ===" in line:
             in_block = True
     return os_packages
+
+
+def filter_nonprintable(text):
+    import itertools
+    # Use characters of control category
+    nonprintable = itertools.chain(range(0x00,0x20),range(0x7f,0xa0))
+    # Use translate to remove all non-printable characters
+    return text.translate({character:None for character in nonprintable})
+
+
+def clear_text_block(temp_text_block):
+    temp_text_block = re.sub("\n", "<new_line>",  temp_text_block)
+    temp_text_block = filter_nonprintable(temp_text_block)
+    temp_text_block = re.sub("^.*========= BEGIN =========","========= BEGIN =========", temp_text_block)
+    temp_text_block = re.sub("=========  END  =========.*","=========  END  =========", temp_text_block)
+    temp_text_block = re.sub("<new_line>", "\n",  temp_text_block)
+    return temp_text_block
+
+
