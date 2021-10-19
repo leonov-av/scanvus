@@ -22,16 +22,17 @@ def get_vulnerability_report(target, os_data, vulners_linux_audit_data):
                         report_dict[package][bul_id] = vuln_report_data
                         bulls.append(bul_id)
                         levels.add(level)
-    if "os_name" not in target and "host" in target:
-        target['os_name'] = target['host']
+
     if 'host' in target:
-        report_text = "Vulnerability Report for " + target['host'] + " (" + target['assement_type'] + ")" + '\n' \
-                      + str(len(bulls)) + " vulnerabilities with levels " + str(list(levels)) + " were found" + \
-                      '\n---\n'
+        target_id = target['host']
     elif 'docker_image' in target:
-        report_text = "Vulnerability Report for " + target['docker_image'] + " (" + target['assement_type'] + ")" + '\n' \
-                      + str(len(bulls)) + " vulnerabilities with levels " + str(list(levels)) + " were found" + \
-                      '\n---\n'
+        target_id = target['docker_image']
+
+    report_text = "Vulnerability Report for " + target_id + " (" + target['assement_type'] + \
+                  ", " + os_data["os_name"] + " " +  os_data["os_version"] + ", " + str(len(os_data["package_list"])) + " packages)" + '\n' \
+                  + str(len(bulls)) + " vulnerabilities with levels " + str(list(levels)) + " were found" + \
+                  '\n---\n'
+
     if report_dict != dict():
         report_text += json.dumps(report_dict, indent=2)
     return {'report_text': report_text, 'report_dict': report_dict}

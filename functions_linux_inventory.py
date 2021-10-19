@@ -2,28 +2,43 @@ import re
 
 linux_audit_bash_script = '''
 hostname=`hostname`; 
+cat /etc/os-release;
 is_ubuntu=`cat /etc/os-release | grep "ubuntu"`; 
 is_debian=`cat /etc/os-release | grep "debian"`; 
 is_centos=`cat /etc/os-release | grep "centos"`;
+is_redhat=`cat /etc/os-release | grep "redhat"`;
+is_alpine=`cat /etc/os-release | grep "alpine"`;
 if [ "$is_ubuntu" != ""  ]; 
 then 
     os_name="ubuntu"; 
     os_version=`cat /etc/os-release | grep "VERSION_ID=" | awk -F"\\"" '{printf $2}'`; 
     packages=`dpkg-query -W -f='${Status} ${Package} ${Version} ${Architecture}\\n' | 
               awk '($1 == "install") && ($2 == "ok") {print $4" "$5" "$6}'`; 
-fi; 
-if [ "$is_debian" != ""  ]; 
+elif [ "$is_debian" != ""  ]; 
 then 
     os_name="debian"; 
     os_version=`cat /etc/os-release | grep "VERSION_ID=" | awk -F"\\"" '{printf $2}'`; 
     packages=`dpkg-query -W -f='${Status} ${Package} ${Version} ${Architecture}\\n' | 
               awk '($1 == "install") && ($2 == "ok") {print $4" "$5" "$6}'`; 
-fi; 
-if [ "$is_centos" != ""  ]; 
+elif [ "$is_centos" != ""  ]; 
 then 
     os_name="centos"; 
     os_version=`cat /etc/os-release | grep "VERSION_ID=" | awk -F"\\"" '{printf $2}'`; 
     packages=`rpm -qa --qf '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\\n'`; 
+elif [ "$is_redhat" != ""  ]; 
+then 
+    os_name="redhat"; 
+    os_version=`cat /etc/os-release | grep "VERSION_ID=" | awk -F"\\"" '{printf $2}'`; 
+    packages=`rpm -qa --qf '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\\n'`;     
+elif  [ "is_alpine" != ""  ]; 
+then 
+    os_name="alpine"; 
+    os_version=`cat /etc/os-release | grep "VERSION_ID=" | awk -F"\\"" '{printf $2}'`; 
+    packages=`apk list --installed`; 
+else
+    os_name="unknown"; 
+    os_version=""; 
+    packages=""; 
 fi; 
 echo "========= BEGIN ========="; 
 echo "hostname:$hostname"; 
