@@ -10,7 +10,7 @@ import json
 def get_text_block(target):
     temp_text_block = ""
     bash_script_oneliner = functions_linux_inventory.get_bash_script_oneliner(functions_linux_inventory.linux_audit_bash_script)
-    if target["assement_type"] == "remote_ssh":
+    if target["assessment_type"] == "remote_ssh":
         ssh_client = functions_transport_ssh.get_ssh_client(target)
         command_result = functions_transport_ssh.execute_command(ssh_client, command=bash_script_oneliner)
         functions_transport_ssh.close_ssh_client(ssh_client)
@@ -19,11 +19,16 @@ def get_text_block(target):
             exit()
         else:
             temp_text_block = command_result['output']
-    elif target["assement_type"] == "localhost":
+    elif target["assessment_type"] == "localhost":
         temp_text_block = functions_transport_localhost.execute_command(command=bash_script_oneliner)
-    elif target["assement_type"] == "docker_image":
+    elif target["assessment_type"] == "docker_image":
         temp_text_block = functions_transport_docker.execute_command(docker_name=target["docker_image"],
                                                                 command=bash_script_oneliner)
+    elif target["assessment_type"] == "inventory_file":
+        f = open(target["inventory_file"],"r")
+        temp_text_block = f.read()
+        f.close()
+
     temp_text_block = functions_linux_inventory.clear_text_block(temp_text_block)
     return temp_text_block
 
@@ -38,11 +43,13 @@ def get_os_data_dict(text_block):
 
 
 parser = argparse.ArgumentParser(description='Scanvus is a Simple Credentialed Authenticated Network VUlnerability Scanner for Linux systems and docker images')
-parser.add_argument('--assement-type', help='Assement type (E.g.: remote_ssh, localhost, docker_image)')
+parser.add_argument('--assessment-type', help='Assessment type (E.g.: remote_ssh, localhost, docker_image, inventory_file)')
 parser.add_argument('--host', help='Remote host to scan (ip of hostname)')
 parser.add_argument('--user-name', help='Username to authenticate on remote host')
 parser.add_argument('--key-path', help='Path to the private key file to authenticate on remote host')
 parser.add_argument('--docker-image', help='Docker image')
+parser.add_argument('--show-inventory-script', help='Shows inventory bash oneliner', action="store_true")
+parser.add_argument('--inventory-file-path', help='Inventory file to process')
 parser.add_argument('--save-os-data-text-block-path', help='Path to the OS data Text Block result file')
 parser.add_argument('--save-os-data-json-path', help='Path to the OS data JSON result file')
 parser.add_argument('--save-vuln-raw-json-path', help='Path to the Raw Vulnerability data JSON result file')
@@ -50,24 +57,33 @@ parser.add_argument('--save-vuln-report-json-path', help='Path to the Vulnerabil
 
 args = parser.parse_args()
 target = dict()
-if args.assement_type:
-    if args.assement_type == "remote_ssh":
+if args.show_inventory_script:
+    bash_script_oneliner = functions_linux_inventory.get_bash_script_oneliner(
+        functions_linux_inventory.linux_audit_bash_script)
+    print(bash_script_oneliner)
+elif args.assessment_type:
+    if args.assessment_type == "remote_ssh":
         target = {
-            "assement_type": "remote_ssh",
+            "assessment_type": "remote_ssh",
             "host": args.host,
             "user_name": args.user_name
         }
         if args.key_path:
             target["key_path"] = args.key_path
-    elif args.assement_type == "localhost":
+    elif args.assessment_type == "localhost":
         target = {
-            "assement_type": "localhost",
+            "assessment_type": "localhost",
             "host": "localhost"
         }
-    elif args.assement_type == "docker_image":
+    elif args.assessment_type == "docker_image":
         target = {
-            "assement_type": "docker_image",
+            "assessment_type": "docker_image",
             "docker_image": args.docker_image
+        }
+    elif args.assessment_type == "inventory_file":
+        target = {
+            "assessment_type": "inventory_file",
+            "inventory_file": args.inventory_file_path
         }
 
     text_block = get_text_block(target)

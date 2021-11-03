@@ -2,7 +2,6 @@ import re
 
 linux_audit_bash_script = '''
 hostname=`hostname`; 
-cat /etc/os-release;
 is_ubuntu=`cat /etc/os-release | grep "ubuntu"`; 
 is_debian=`cat /etc/os-release | grep "debian"`; 
 is_centos=`cat /etc/os-release | grep "centos"`;
