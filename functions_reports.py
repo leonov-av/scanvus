@@ -1,11 +1,11 @@
 import json
-
+from beautifultable import BeautifulTable
 
 def get_vulnerability_report(target, os_data, vulners_linux_audit_data):
     report_dict = dict()
-    bulls = list()
     levels = set()
-    necessary_levels = ['High', 'Medium', 'Critical']
+    necessary_levels = ['Critical', 'High', 'Medium']
+    bull_to_criticality = dict()
     for package in vulners_linux_audit_data['data']['packages']:
         for bul_id in vulners_linux_audit_data['data']['packages'][package]:
             for vuln in vulners_linux_audit_data['data']['packages'][package][bul_id]:
@@ -16,12 +16,56 @@ def get_vulnerability_report(target, os_data, vulners_linux_audit_data):
                         'CVSS': vuln['cvss'],
                         'CVE List': vuln['cvelist']
                     }
-                    if package not in report_dict:
-                        report_dict[package] = dict()
-                    if bul_id not in report_dict[package]:
-                        report_dict[package][bul_id] = vuln_report_data
-                        bulls.append(bul_id)
+                    if bul_id not in report_dict:
+                        report_dict[bul_id] = dict()
+                        report_dict[bul_id]['packages'] = dict()
+                        report_dict[bul_id]['vuln'] = vuln_report_data
+                        bull_to_criticality[bul_id] = level
                         levels.add(level)
+                    if package not in report_dict[bul_id]:
+                        report_dict[bul_id]['packages'][package] = {
+                            'operator': vuln['operator'],
+                            'bulletinVersion': vuln['bulletinVersion']
+                        }
+
+    bul_id_sorted_list = list()
+    bul_id_to_criticality_keys = list(bull_to_criticality.keys())
+    bul_id_to_criticality_keys.sort()
+    for level in necessary_levels:
+        for bul_id in bul_id_to_criticality_keys:
+            if bull_to_criticality[bul_id] == level:
+                bul_id_sorted_list.append(bul_id)
+
+    levels_sorted_list = list()
+    for necessary_level in necessary_levels:
+        for level in levels:
+            if level == necessary_level:
+                levels_sorted_list.append(level)
+
+    n = 1
+    table = BeautifulTable(maxwidth=4000)
+    table.columns.header = ["N", "Level", "Bulletin", "CVE", "Proof"]
+    for bul_id in bul_id_sorted_list:
+        line = list()
+        line.append(str(n))
+        line.append(report_dict[bul_id]['vuln']['Level'])
+        line.append(bul_id)
+
+        line.append("\n".join(report_dict[bul_id]['vuln']['CVE List']))
+
+        proof_lines = list()
+        for package in report_dict[bul_id]['packages']:
+            operator = report_dict[bul_id]['packages'][package]['operator']
+            if operator == "lt":
+                operator = "<"
+            elif operator == "gt":
+                operator = ">"
+            proof_lines.append(package + " " + operator +
+                               " " + report_dict[bul_id]['packages'][package]['bulletinVersion'] )
+        proof_line = "\n".join(proof_lines)
+        line.append(proof_line)
+        table.rows.append(line)
+        n += 1
 
     if 'host' in target:
         target_id = target['host']
@@ -31,12 +75,13 @@ def get_vulnerability_report(target, os_data, vulners_linux_audit_data):
         target_id = target['inventory_file']
 
     report_text = "Vulnerability Report for " + target_id + " (" + target['assessment_type'] + \
-                  ", " + os_data["os_name"] + " " +  os_data["os_version"] + ", " + str(len(os_data["package_list"])) + " packages)" + '\n' \
-                  + str(len(bulls)) + " vulnerabilities with levels " + str(list(levels)) + " were found" + \
-                  '\n---\n'
+                  ", " + os_data["os_name"] + " " +  os_data["os_version"] + ", " + str(len(os_data["package_list"])) \
+                  + " packages)" + '\n' + str(len(bul_id_sorted_list)) + " vulnerabilities with levels " + str(list(levels)) +\
+                  " were found\n"
+
 
     if report_dict != dict():
-        report_text += json.dumps(report_dict, indent=2)
+        report_text += str(table)
     return {'report_text': report_text, 'report_dict': report_dict}
 
 

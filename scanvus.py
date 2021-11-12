@@ -41,7 +41,6 @@ def get_os_data_dict(text_block):
     # os_data['package_list'] = ["apt 1.0.6 amd64","apt-config-icons 0.12.10-2 all"] # DEBUG
     return os_data
 
-
 parser = argparse.ArgumentParser(description='Scanvus is a Simple Credentialed Authenticated Network VUlnerability Scanner for Linux systems and docker images')
 parser.add_argument('--assessment-type', help='Assessment type (E.g.: remote_ssh, localhost, docker_image, inventory_file)')
 parser.add_argument('--host', help='Remote host to scan (ip of hostname)')
@@ -55,6 +54,12 @@ parser.add_argument('--save-os-data-json-path', help='Path to the OS data JSON r
 parser.add_argument('--save-vuln-raw-json-path', help='Path to the Raw Vulnerability data JSON result file')
 parser.add_argument('--save-vuln-report-json-path', help='Path to the Vulnerability Report data JSON result file')
 
+print('''  /$$$$$$$  /$$$$$$$  /$$$$$$  /$$$$$$$  /$$    /$$/$$   /$$  /$$$$$$$
+ /$$_____/ /$$_____/ |____  $$| $$__  $$|  $$  /$$/ $$  | $$ /$$_____/
+|  $$$$$$ | $$        /$$$$$$$| $$  \ $$ \  $$/$$/| $$  | $$|  $$$$$$ 
+ \____  $$| $$       /$$__  $$| $$  | $$  \  $$$/ | $$  | $$ \____  $$
+ /$$$$$$$/|  $$$$$$$|  $$$$$$$| $$  | $$   \  $/  |  $$$$$$/ /$$$$$$$/
+|_______/  \_______/ \_______/|__/  |__/    \_/    \______/ |_______/ ''')
 args = parser.parse_args()
 target = dict()
 if args.show_inventory_script:
@@ -62,6 +67,7 @@ if args.show_inventory_script:
         functions_linux_inventory.linux_audit_bash_script)
     print(bash_script_oneliner)
 elif args.assessment_type:
+    print("Getting assessment target...")
     if args.assessment_type == "remote_ssh":
         target = {
             "assessment_type": "remote_ssh",
@@ -85,11 +91,19 @@ elif args.assessment_type:
             "assessment_type": "inventory_file",
             "inventory_file": args.inventory_file_path
         }
-
+    for key in target:
+        print("  " + key + ": " + target[key])
+    print("Getting OS inventory data...")
     text_block = get_text_block(target)
     os_data = get_os_data_dict(text_block)
+    print("  os_name: " + os_data["os_name"])
+    print("  os_version: " + os_data["os_version"])
+    print("  package_list_len: " + str(len(os_data["package_list"])))
+    print("Getting vulnerability data...")
     vulners_linux_audit_data = functions_vuln_detects.get_vulners_linux_audit_data(os_data)
+    print("Getting vulnerability report...")
     vulnerability_report = functions_reports.get_vulnerability_report(target, os_data, vulners_linux_audit_data)
+    print("-------------")
     print(vulnerability_report['report_text'])
 
     if args.save_os_data_text_block_path:
