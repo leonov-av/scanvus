@@ -22,8 +22,16 @@ def get_text_block(target):
     elif target["assessment_type"] == "localhost":
         temp_text_block = functions_transport_localhost.execute_command(command=bash_script_oneliner)
     elif target["assessment_type"] == "docker_image":
-        temp_text_block = functions_transport_docker.execute_command(docker_name=target["docker_image"],
+        try:
+            temp_text_block = functions_transport_docker.execute_command_docker_expect(
+                                                                docker_name=target["docker_image"],
                                                                 command=bash_script_oneliner)
+        except:
+            temp_text_block = ""
+        if not "=========  END  =========" in temp_text_block:
+            print("Problems with docker_expect, trying alternative docker image audit...")
+            temp_text_block = functions_transport_docker.get_linux_audit(docker_name=target["docker_image"])
+
     elif target["assessment_type"] == "inventory_file":
         f = open(target["inventory_file"],"r")
         temp_text_block = f.read()
