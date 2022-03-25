@@ -1,0 +1,4 @@
+paramiko
+beautifultable
+docker
+pexpect
