@@ -1,4 +1,4 @@
-**Scanvus** is a **S**imple **C**redentialed **A**uthenticated **N**etwork **VU**lnerability **S**canner for Linux systems and docker images, which uses the Vulners Linux API under the hood.
+**Scanvus** is a **S**imple **C**redentialed **A**uthenticated **N**etwork **VU**lnerability **S**canner for Linux hosts and Docker images, which uses the Vulners Linux API under the hood.
 
 ![scanvus logo](https://raw.githubusercontent.com/leonov-av/scanvus/main/logo/scanvus_line.png)
 
