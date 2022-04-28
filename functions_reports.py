@@ -71,14 +71,20 @@ def get_vulnerability_report(target, os_data, vulners_linux_audit_data):
         target_id = target['host']
     elif 'docker_image' in target:
         target_id = target['docker_image']
+    elif 'hostname' in os_data:
+        target_id = target['hostname']
     elif 'inventory_file' in target:
         target_id = target['inventory_file']
 
-    report_text = "Vulnerability Report for " + target_id + " (" + target['assessment_type'] + \
-                  ", " + os_data["os_name"] + " " +  os_data["os_version"] + ", " + str(len(os_data["package_list"])) \
-                  + " packages)" + '\n' + str(len(bul_id_sorted_list)) + " vulnerabilities with levels " + str(list(levels)) +\
-                  " were found\n"
-
+    report_text = "Vulnerability Report for " + target_id + " (" + target['assessment_type'] \
+                  + ", " + os_data["os_name"] + " " +  os_data["os_version"] + ", linux kernel " \
+                  + str(os_data["linux_kernel"]) + ", " + str(len(os_data["package_list"])) \
+                  + " packages)" + '\n'
+    if len(bul_id_sorted_list) == 0:
+        report_text += str(len(bul_id_sorted_list)) + " vulnerabilities were found\n"
+    else:
+        report_text += str(len(bul_id_sorted_list)) + " vulnerabilities with levels " \
+                  + str(list(levels)) + " were found\n"
 
     if report_dict != dict():
         report_text += str(table)

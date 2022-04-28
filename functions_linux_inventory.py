@@ -2,6 +2,7 @@ import re
 
 linux_audit_bash_script = '''
 hostname=`hostname`; 
+linux_kernel=`uname -r`; 
 is_ubuntu=`cat /etc/os-release | grep "ubuntu"`; 
 is_debian=`cat /etc/os-release | grep "debian"`; 
 is_centos=`cat /etc/os-release | grep "centos"`;
@@ -41,13 +42,13 @@ else
 fi; 
 echo "========= BEGIN ========="; 
 echo "hostname:$hostname"; 
+echo "linux_kernel:$linux_kernel"; 
 echo "os_name:$os_name"; 
 echo "os_version:$os_version";
 echo "=== packages ==="; 
 echo "$packages";  
 echo "=========  END  =========";
 '''
-
 
 def get_bash_script_oneliner(bash_script):
     oneliner = ""
@@ -72,6 +73,14 @@ def get_os_name_from_text_block(block):
         if "os_name:" in line:
             os_name = line.split(":")[1]
     return os_name
+
+
+def get_linux_kernel_from_text_block(block):
+    linux_kernel = ""
+    for line in block.split("\n"):
+        if "linux_kernel:" in line:
+            linux_kernel = line.split(":")[1]
+    return linux_kernel
 
 
 def get_os_version_from_text_block(block):

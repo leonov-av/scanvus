@@ -46,6 +46,7 @@ def get_linux_audit(docker_name):
     client = docker.from_env()
     hostname = re.sub("\n","",get_docker_execution(client, docker_name, command='hostname'))
     os_release = get_docker_execution(client, docker_name, command="cat /etc/os-release")
+    linux_kernel = get_docker_execution(client, docker_name, command="uname -r")
 
     is_ubuntu = False
     is_debian = False
@@ -98,6 +99,7 @@ def get_linux_audit(docker_name):
     output += "hostname:" + hostname + "\n"
     output += "os_name:" + os_name + "\n"
     output += "os_version:" + os_version + "\n"
+    output += "linux_kernel:" + linux_kernel + "\n"
     output += "========= packages =========" + "\n"
     output += packages + "\n"
     output += "=========  END  =========" + "\n"

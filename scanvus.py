@@ -45,6 +45,7 @@ def get_os_data_dict(text_block):
     os_data = dict()
     os_data["os_name"] = functions_linux_inventory.get_os_name_from_text_block(text_block)
     os_data["os_version"] = functions_linux_inventory.get_os_version_from_text_block(text_block)
+    os_data["linux_kernel"] = functions_linux_inventory.get_linux_kernel_from_text_block(text_block)
     os_data['package_list'] = functions_linux_inventory.get_os_packages_from_text_block(text_block)
     # os_data['package_list'] = ["apt 1.0.6 amd64","apt-config-icons 0.12.10-2 all"] # DEBUG
     return os_data
