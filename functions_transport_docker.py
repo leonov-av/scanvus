@@ -58,6 +58,8 @@ def get_linux_audit(docker_name):
         is_ubuntu = True
     elif "debian" in os_release:
         is_debian = True
+    elif "Oracle Linux" in os_release:
+        is_oraclelinux = True
     elif "centos" in os_release:
         is_centos = True
     elif "redhat" in os_release:
@@ -79,6 +81,11 @@ def get_linux_audit(docker_name):
         dpkg_query_output = re.sub("\n$","",get_docker_execution(client, docker_name, command))
         package_list_debian = get_package_list_debian(dpkg_query_output)
         packages = "\n".join(package_list_debian)
+    elif is_oraclelinux:
+        os_name = "oraclelinux"
+        os_version = get_version_id_from_os_release(os_release)
+        command = '''rpm -qa --qf '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' '''
+        packages = re.sub("\n$","",get_docker_execution(client, docker_name, command))
     elif is_centos:
         os_name = "centos"
         os_version = get_version_id_from_os_release(os_release)
