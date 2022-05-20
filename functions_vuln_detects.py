@@ -8,7 +8,7 @@ def get_vulners_linux_audit_data(os_data):
     if credentials.vulners_api_key == "":
         print("Error: No Vulners API key")
         exit()
-    if os_data["os_name"] not in ['ubuntu', 'debian', 'centos', 'redhat', 'alpine']:
+    if os_data["os_name"] not in ['ubuntu', 'debian', 'centos', 'oraclelinux', 'redhat', 'alpine']:
         print("Error: Unsupported OS (" + os_data["os_name"] + ")")
         exit()
     data = {"os": os_data["os_name"], "version": os_data["os_version"],
