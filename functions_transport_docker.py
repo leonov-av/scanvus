@@ -50,6 +50,7 @@ def get_linux_audit(docker_name):
 
     is_ubuntu = False
     is_debian = False
+    is_oraclelinux = False
     is_centos = False
     is_redhat = False
     is_alpine = False
