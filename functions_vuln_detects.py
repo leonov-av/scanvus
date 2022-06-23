@@ -16,6 +16,6 @@ def get_vulners_linux_audit_data(os_data):
     response = requests.post('https://vulners.com/api/v3/audit/audit', data=json.dumps(data))
     vulners_data = response.json()
     if vulners_data['result'] == "error":
-        print("Error: " + vulners_data['data']['error'] + " (" +  vulners_data['data']['errorCode'] + ")" )
+        print("Error: " + vulners_data['data']['error'] + " (" +  str(vulners_data['data']['errorCode']) + ")" )
         exit()
     return vulners_data
