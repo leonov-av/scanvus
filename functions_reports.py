@@ -6,27 +6,28 @@ def get_vulnerability_report(target, os_data, vulners_linux_audit_data):
     levels = set()
     necessary_levels = ['Critical', 'High', 'Medium']
     bull_to_criticality = dict()
-    for package in vulners_linux_audit_data['data']['packages']:
-        for bul_id in vulners_linux_audit_data['data']['packages'][package]:
-            for vuln in vulners_linux_audit_data['data']['packages'][package][bul_id]:
-                level = get_level_from_cvss_base_score(vuln['cvss']['score'])
-                if level in necessary_levels:
-                    vuln_report_data = {
-                        'Level': level,
-                        'CVSS': vuln['cvss'],
-                        'CVE List': vuln['cvelist']
-                    }
-                    if bul_id not in report_dict:
-                        report_dict[bul_id] = dict()
-                        report_dict[bul_id]['packages'] = dict()
-                        report_dict[bul_id]['vuln'] = vuln_report_data
-                        bull_to_criticality[bul_id] = level
-                        levels.add(level)
-                    if package not in report_dict[bul_id]:
-                        report_dict[bul_id]['packages'][package] = {
-                            'operator': vuln['operator'],
-                            'bulletinVersion': vuln['bulletinVersion']
+    if 'packages' in vulners_linux_audit_data['data']:
+        for package in vulners_linux_audit_data['data']['packages']:
+            for bul_id in vulners_linux_audit_data['data']['packages'][package]:
+                for vuln in vulners_linux_audit_data['data']['packages'][package][bul_id]:
+                    level = get_level_from_cvss_base_score(vuln['cvss']['score'])
+                    if level in necessary_levels:
+                        vuln_report_data = {
+                            'Level': level,
+                            'CVSS': vuln['cvss'],
+                            'CVE List': vuln['cvelist']
                         }
+                        if bul_id not in report_dict:
+                            report_dict[bul_id] = dict()
+                            report_dict[bul_id]['packages'] = dict()
+                            report_dict[bul_id]['vuln'] = vuln_report_data
+                            bull_to_criticality[bul_id] = level
+                            levels.add(level)
+                        if package not in report_dict[bul_id]:
+                            report_dict[bul_id]['packages'][package] = {
+                                'operator': vuln['operator'],
+                                'bulletinVersion': vuln['bulletinVersion']
+                            }
 
     bul_id_sorted_list = list()
     bul_id_to_criticality_keys = list(bull_to_criticality.keys())
