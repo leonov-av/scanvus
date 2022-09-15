@@ -13,7 +13,10 @@ def get_vulners_linux_audit_data(os_data):
         exit()
     data = {"os": os_data["os_name"], "version": os_data["os_version"],
             "package": os_data["package_list"], "apiKey": credentials.vulners_api_key}
-    response = requests.post('https://vulners.com/api/v3/audit/audit', data=json.dumps(data))
+    headers = {
+        'User-Agent': 'Scanvus v1.0.3',
+    }
+    response = requests.post('https://vulners.com/api/v3/audit/audit', data=json.dumps(data), headers=headers)
     vulners_data = response.json()
     if vulners_data['result'] == "error":
         print("Error: " + vulners_data['data']['error'] + " (" +  str(vulners_data['data']['errorCode']) + ")" )
