@@ -83,7 +83,7 @@ optional arguments:
   --host HOST           Remote host to scan (ip of hostname)
   --user-name USER_NAME
                         Username to authenticate on remote host
-  --password            Password to authenticate on remote host           
+  --password PASSWORD   Password to authenticate on remote host           
   --key-path KEY_PATH   Path to the private key file to authenticate on remote host
   --docker-image DOCKER_IMAGE
                         Docker image
