@@ -68,7 +68,8 @@ Vulnerability Report for python:3.9.6-slim-bullseye (docker_image, debian 11, 10
 ### Options
 ```buildoutcfg
 $ python3.8 scanvus.py -h
-usage: scanvus.py [-h] [--assessment-type ASSESSMENT_TYPE] [--host HOST] [--user-name USER_NAME] [--key-path KEY_PATH] [--docker-image DOCKER_IMAGE]
+usage: scanvus.py [-h] [--assessment-type ASSESSMENT_TYPE] [--host HOST] [--user-name USER_NAME] [--password PASSWORD]
+                  [--key-path KEY_PATH] [--docker-image DOCKER_IMAGE]
                   [--show-inventory-script] [--inventory-file-path INVENTORY_FILE_PATH] [--save-os-data-text-block-path SAVE_OS_DATA_TEXT_BLOCK_PATH]
                   [--save-os-data-json-path SAVE_OS_DATA_JSON_PATH] [--save-vuln-raw-json-path SAVE_VULN_RAW_JSON_PATH]
                   [--save-vuln-report-json-path SAVE_VULN_REPORT_JSON_PATH]
@@ -82,6 +83,7 @@ optional arguments:
   --host HOST           Remote host to scan (ip of hostname)
   --user-name USER_NAME
                         Username to authenticate on remote host
+  --password            Password to authenticate on remote host           
   --key-path KEY_PATH   Path to the private key file to authenticate on remote host
   --docker-image DOCKER_IMAGE
                         Docker image
