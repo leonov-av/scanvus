@@ -8,7 +8,7 @@ def get_ssh_client(target):
     if 'password' in target:
         client.connect(hostname=target['host'],
                        username=target['user_name'],
-                       key_filename=target['key_path'],
+                     #  key_filename=target['key_path'],
                        password=target['password'])
     else:
         client.connect(hostname=target['host'],

@@ -54,6 +54,7 @@ parser = argparse.ArgumentParser(description='Scanvus is a Simple Credentialed A
 parser.add_argument('--assessment-type', help='Assessment type (E.g.: remote_ssh, localhost, docker_image, inventory_file)')
 parser.add_argument('--host', help='Remote host to scan (ip of hostname)')
 parser.add_argument('--user-name', help='Username to authenticate on remote host')
+parser.add_argument('--password', help='Password to authenticate on remote host')
 parser.add_argument('--key-path', help='Path to the private key file to authenticate on remote host')
 parser.add_argument('--docker-image', help='Docker image')
 parser.add_argument('--show-inventory-script', help='Shows inventory bash oneliner', action="store_true")
@@ -81,10 +82,12 @@ elif args.assessment_type:
         target = {
             "assessment_type": "remote_ssh",
             "host": args.host,
-            "user_name": args.user_name
+            "user_name": args.user_name,
         }
         if args.key_path:
             target["key_path"] = args.key_path
+        if args.password:
+            target["password"] = args.password
     elif args.assessment_type == "localhost":
         target = {
             "assessment_type": "localhost",
