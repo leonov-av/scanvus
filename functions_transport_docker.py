@@ -65,6 +65,8 @@ def get_linux_audit(docker_name):
         is_centos = True
     elif "redhat" in os_release:
         is_redhat = True
+    elif "fedora" in os_release:
+        is_fedora = True
     elif "alpine" in os_release:
         is_alpine = True
 
@@ -94,6 +96,11 @@ def get_linux_audit(docker_name):
         packages = re.sub("\n$","",get_docker_execution(client, docker_name, command))
     elif is_redhat:
         os_name = "redhat"
+        os_version = get_version_id_from_os_release(os_release)
+        command = '''rpm -qa --qf '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' '''
+        packages = re.sub("\n$","",get_docker_execution(client, docker_name, command))
+    elif is_fedora:
+        os_name = "fedora"
         os_version = get_version_id_from_os_release(os_release)
         command = '''rpm -qa --qf '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' '''
         packages = re.sub("\n$","",get_docker_execution(client, docker_name, command))
