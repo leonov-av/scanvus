@@ -77,6 +77,9 @@ Scanvus is a Simple Credentialed Authenticated Network VUlnerability Scanner for
 
 optional arguments:
   -h, --help            show this help message and exit
+  --audit-service ["vulners", "vulnsio"] Audit API service:
+                                             "vulners" (default) - https://vulners.com,
+                                             "vulnsio" - https://vulns.io
   --assessment-type ASSESSMENT_TYPE
                         Assessment type (E.g.: remote_ssh, localhost, docker_image, inventory_file)
   --host HOST           Remote host to scan (ip of hostname)
@@ -97,6 +100,8 @@ optional arguments:
                         Path to the Raw Vulnerability data JSON result file
   --save-vuln-report-json-path SAVE_VULN_REPORT_JSON_PATH
                         Path to the Vulnerability Report data JSON result file
+  --save-vuln-report-text-path SAVE_VULN_REPORT_TEXT_PATH
+                        Path to the Vulnerability Report data Text result file
 ```
 
 ## Requirements
