@@ -1,4 +1,4 @@
-**Scanvus** is a **S**imple **C**redentialed **A**uthenticated **N**etwork **VU**lnerability **S**canner for Linux hosts and Docker images, which uses the Vulners Linux API under the hood.
+**Scanvus** is a **S**imple **C**redentialed **A**uthenticated **N**etwork **VU**lnerability **S**canner for Linux hosts and Docker images, which uses external vulnerability detections APIs ([Vulners Linux API](https://vulners.com/docs/API_wrapper/linux_audit/) or [Vulns.io API](https://vulns.io/)) under the hood.
 
 ![scanvus logo](https://raw.githubusercontent.com/leonov-av/scanvus/main/logo/scanvus_line.png)
 
@@ -68,18 +68,23 @@ Vulnerability Report for python:3.9.6-slim-bullseye (docker_image, debian 11, 10
 ### Options
 ```buildoutcfg
 $ python3.8 scanvus.py -h
-usage: scanvus.py [-h] [--assessment-type ASSESSMENT_TYPE] [--host HOST] [--user-name USER_NAME] [--key-path KEY_PATH] [--docker-image DOCKER_IMAGE]
+  /$$$$$$$  /$$$$$$$  /$$$$$$  /$$$$$$$  /$$    /$$/$$   /$$  /$$$$$$$
+ /$$_____/ /$$_____/ |____  $$| $$__  $$|  $$  /$$/ $$  | $$ /$$_____/
+|  $$$$$$ | $$        /$$$$$$$| $$  \ $$ \  $$/$$/| $$  | $$|  $$$$$$ 
+ \____  $$| $$       /$$__  $$| $$  | $$  \  $$$/ | $$  | $$ \____  $$
+ /$$$$$$$/|  $$$$$$$|  $$$$$$$| $$  | $$   \  $/  |  $$$$$$/ /$$$$$$$/
+|_______/  \_______/ \_______/|__/  |__/    \_/    \______/ |_______/ 
+usage: scanvus.py [-h] [--audit-service {vulners,vulnsio}] [--assessment-type ASSESSMENT_TYPE] [--host HOST] [--user-name USER_NAME] [--key-path KEY_PATH] [--docker-image DOCKER_IMAGE]
                   [--show-inventory-script] [--inventory-file-path INVENTORY_FILE_PATH] [--save-os-data-text-block-path SAVE_OS_DATA_TEXT_BLOCK_PATH]
-                  [--save-os-data-json-path SAVE_OS_DATA_JSON_PATH] [--save-vuln-raw-json-path SAVE_VULN_RAW_JSON_PATH]
-                  [--save-vuln-report-json-path SAVE_VULN_REPORT_JSON_PATH]
+                  [--save-os-data-json-path SAVE_OS_DATA_JSON_PATH] [--save-vuln-raw-json-path SAVE_VULN_RAW_JSON_PATH] [--save-vuln-report-json-path SAVE_VULN_REPORT_JSON_PATH]
+                  [--save-vuln-report-text-path SAVE_VULN_REPORT_TEXT_PATH]
 
 Scanvus is a Simple Credentialed Authenticated Network VUlnerability Scanner for Linux systems and docker images
 
 optional arguments:
   -h, --help            show this help message and exit
-  --audit-service ["vulners", "vulnsio"] Audit API service:
-                                             "vulners" (default) - https://vulners.com,
-                                             "vulnsio" - https://vulns.io
+  --audit-service {vulners,vulnsio}
+                        Audit API service:"vulners" (default) - https://vulners.com, "vulnsio" - https://vulns.io
   --assessment-type ASSESSMENT_TYPE
                         Assessment type (E.g.: remote_ssh, localhost, docker_image, inventory_file)
   --host HOST           Remote host to scan (ip of hostname)
