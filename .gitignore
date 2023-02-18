@@ -1,4 +1,7 @@
 credentials.py
 __pycache__/
-venv/
-
+lib/
+lib64
+bin/
+dist/
+pyvenv.cfg

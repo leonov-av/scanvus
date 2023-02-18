@@ -1,10 +1,13 @@
+import re
 import json
 from beautifultable import BeautifulTable
 
-def get_vulnerability_report(target, os_data, vulners_linux_audit_data):
+necessary_levels = ['Critical', 'High', 'Medium']
+
+
+def get_vulners_vulnerability_report(target, os_data, vulners_linux_audit_data):
     report_dict = dict()
     levels = set()
-    necessary_levels = ['Critical', 'High', 'Medium']
     bull_to_criticality = dict()
     if 'packages' in vulners_linux_audit_data['data']:
         for package in vulners_linux_audit_data['data']['packages']:
@@ -29,6 +32,83 @@ def get_vulnerability_report(target, os_data, vulners_linux_audit_data):
                                 'bulletinVersion': vuln['bulletinVersion']
                             }
 
+    report_text = get_text_vulnerability_report(target, os_data, report_dict, bull_to_criticality, levels)
+
+    return {'report_text': report_text, 'report_dict': report_dict}
+
+
+def get_vulnsio_vulnerability_report(target, os_data, vulnsio_linux_audit_data):
+    report_dict = dict()
+    levels = set()
+    bull_to_criticality = dict()
+    bull_without_advisory = dict()
+
+    def set_vulnsio_report_data(advisory_id, cve_id, package, cve_reason, cve_metrics):
+        if advisory_id not in report_dict:
+            report_dict[advisory_id] = {
+               "packages": dict(),
+               "vuln": {
+                   "Level": "",
+                   "CVSS": {"score": 0, "vector": ""},
+                   "CVE List": set()
+               }
+            }
+        report_dict[advisory_id]['vuln']['CVE List'].add(cve_id)
+        reason = re.search(r"^.*([><]=?)(.*)$", cve_reason)
+        report_dict[advisory_id]['packages'][package] = {
+            'operator': '' if not reason else reason.group(1),
+            'bulletinVersion': '' if not reason else reason.group(2)
+        }
+        max_metric = get_max_metrics(cve_metrics)
+        level = get_level_from_cvss_base_score(max_metric['score'])
+        if max_metric['score'] > report_dict[advisory_id]['vuln']['CVSS']['score'] and level in necessary_levels:
+            report_dict[advisory_id]['vuln']['CVSS'] = max_metric
+            report_dict[advisory_id]['vuln']['Level'] = level
+            bull_to_criticality[advisory_id] = level
+            levels.add(level)
+
+    if vulnsio_linux_audit_data['isVulnerable']:
+        for vulnerableObject in vulnsio_linux_audit_data['vulnerableObjects']:
+            package = f'{vulnerableObject["name"]}-{vulnerableObject["version"]}.{vulnerableObject["arch"]}'
+            for vuln in vulnerableObject['vulns']:
+                is_added = False
+                if vuln['related']:
+                    for bull_id in vuln['related']:
+                        if bull_id in vulnsio_linux_audit_data['cumulativeData']['vulns']:
+                            vuln_id = vuln['id']
+                            bull = vulnsio_linux_audit_data['cumulativeData']['vulns'][bull_id]
+
+                            if vuln['type'] == 'advisory' and bull['type'] == 'cve':
+                                is_added = True
+                                set_vulnsio_report_data(vuln_id, bull_id, package, bull.get('reason', ''), bull['metrics'])
+
+                            if vuln['type'] == 'cve' and bull['type'] == 'advisory':
+                                is_added = True
+                                set_vulnsio_report_data(bull_id, vuln_id, package, vuln.get('reason', ''), vulnsio_linux_audit_data['cumulativeData']['vulns'][vuln_id]['metrics'])
+
+                # if cve was not added to the report, then it does not have a reference to the advisory
+                if not is_added and vuln['id'] not in report_dict:
+                    if vuln['id'] not in bull_without_advisory:
+                        bull_without_advisory[vuln['id']] = {
+                            'packages': dict(),
+                            'metrics': vulnsio_linux_audit_data['cumulativeData']['vulns'][vuln['id']]['metrics']
+                        }
+                    bull_without_advisory[vuln['id']]['packages'][package] = vuln.get('reason', '')
+
+    # add cve without advisory separately
+    for bull_id in bull_without_advisory:
+        if bull_id not in report_dict:
+            max_metric = get_max_metrics(bull_without_advisory[bull_id]['metrics'])
+            level = get_level_from_cvss_base_score(max_metric['score'])
+            for package in bull_without_advisory[bull_id]['packages']:
+                set_vulnsio_report_data(f'_no_advisory_{level.lower()}', bull_id, package, bull_without_advisory[bull_id]['packages'][package], bull_without_advisory[bull_id]['metrics'])
+
+    report_text = get_text_vulnerability_report(target, os_data, report_dict, bull_to_criticality, levels)
+
+    return {'report_text': report_text, 'report_dict': report_dict}
+
+    
+def get_text_vulnerability_report(target, os_data, report_dict, bull_to_criticality, levels):
     bul_id_sorted_list = list()
     bul_id_to_criticality_keys = list(bull_to_criticality.keys())
     bul_id_to_criticality_keys.sort()
@@ -50,7 +130,7 @@ def get_vulnerability_report(target, os_data, vulners_linux_audit_data):
         line = list()
         line.append(str(n))
         line.append(report_dict[bul_id]['vuln']['Level'])
-        line.append(bul_id)
+        line.append(bul_id if '_no_advisory_' not in bul_id else 'no advisory')
 
         line.append("\n".join(report_dict[bul_id]['vuln']['CVE List']))
 
@@ -89,7 +169,21 @@ def get_vulnerability_report(target, os_data, vulners_linux_audit_data):
 
     if report_dict != dict():
         report_text += str(table)
-    return {'report_text': report_text, 'report_dict': report_dict}
+
+    return report_text
+
+
+def get_max_metrics(metrics):
+    if not metrics:
+        return {'score': 0, 'vector': ''}
+
+    max_metric = max(metrics, key=lambda x: float(x.get('cvss', {}).get('score', 0)))
+    if 'cvss' in max_metric:
+        max_metric['cvss']['score'] = float(max_metric['cvss']['score'])
+    else:
+        max_metric['cvss'] = {'score': 0, 'vector': ''}
+
+    return max_metric['cvss']
 
 
 def get_all_cve_report(vulners_audit_data):
