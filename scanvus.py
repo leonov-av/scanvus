@@ -73,6 +73,7 @@ parser.add_argument('--assessment-type', help='Assessment type (E.g.: remote_ssh
 parser.add_argument('--host', help='Remote host to scan (ip of hostname)')
 parser.add_argument('--user-name', help='Username to authenticate on remote host')
 parser.add_argument('--key-path', help='Path to the private key file to authenticate on remote host')
+parser.add_argument('--password', help='User password or private key passphrase to authenticate on remote host')
 parser.add_argument('--docker-image', help='Docker image')
 parser.add_argument('--show-inventory-script', help='Shows inventory bash oneliner', action="store_true")
 parser.add_argument('--inventory-file-path', help='Inventory file to process')
@@ -106,6 +107,8 @@ elif args.assessment_type:
         }
         if args.key_path:
             target["key_path"] = args.key_path
+        if args.key_path:
+            target["password"] = args.password
     elif args.assessment_type == "localhost":
         target = {
             "assessment_type": "localhost",
