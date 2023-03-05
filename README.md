@@ -11,7 +11,7 @@ python3.8 scanvus.py --assessment-type "localhost"
 ```
 * remote hosts via SSH (key authentication) 
 ```buildoutcfg
-python3.8 scanvus.py --assessment-type "remote_ssh"  --host "linuxserver1@corporation.com" --user-name "jsmith" --key-path "/home/jsmith/.ssh/id_rsa"
+python3.8 scanvus.py --assessment-type "remote_ssh"  --host "linuxserver1.corporation.com" --user-name "jsmith" --key-path "/home/jsmith/.ssh/id_rsa"
 ```
 * docker images 
 ```buildoutcfg
