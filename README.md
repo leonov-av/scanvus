@@ -9,14 +9,11 @@ You can run a scan for the following targets:
 ```buildoutcfg
 python3 scanvus.py --assessment-type "localhost"
 ```
-* remote hosts via SSH
-
-key authentication:  
+* remote hosts via SSH (key authentication)
 ```buildoutcfg
 python3 scanvus.py --assessment-type "remote_ssh"  --host "linuxserver1.corporation.com" --user-name "jsmith" --key-path "/home/jsmith/.ssh/id_rsa"
 ```
-
-password authentication:  
+* remote hosts via SSH (password authentication)
 ```buildoutcfg
 python3 scanvus.py --assessment-type "remote_ssh"  --host "linuxserver1.corporation.com" --user-name "jsmith" --password "Password123"
 ```
