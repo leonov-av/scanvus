@@ -7,25 +7,32 @@
 You can run a scan for the following targets:
 * localhost
 ```buildoutcfg
-python3.8 scanvus.py --assessment-type "localhost"
+python3 scanvus.py --assessment-type "localhost"
 ```
-* remote hosts via SSH (key authentication) 
+* remote hosts via SSH
+
+key authentication:  
 ```buildoutcfg
-python3.8 scanvus.py --assessment-type "remote_ssh"  --host "linuxserver1.corporation.com" --user-name "jsmith" --key-path "/home/jsmith/.ssh/id_rsa"
+python3 scanvus.py --assessment-type "remote_ssh"  --host "linuxserver1.corporation.com" --user-name "jsmith" --key-path "/home/jsmith/.ssh/id_rsa"
+```
+
+password authentication:  
+```buildoutcfg
+python3 scanvus.py --assessment-type "remote_ssh"  --host "linuxserver1.corporation.com" --user-name "jsmith" --password "Password123"
 ```
 * docker images 
 ```buildoutcfg
-python3.8 scanvus.py --assessment-type "docker_image" --docker-image "python:3.9.6-slim-bullseye" 
+python3 scanvus.py --assessment-type "docker_image" --docker-image "python:3.9.6-slim-bullseye" 
 ```
 * inventory file 
 ```buildoutcfg
-python3.8 scanvus.py --show-inventory-script
+python3 scanvus.py --show-inventory-script
 # Execute bash oneliner on a target host and save output to invent.txt
-python3.8 scanvus.py --assessment-type inventory_file --inventory-file-path  invent.txt
+python3 scanvus.py --assessment-type inventory_file --inventory-file-path  invent.txt
 ```
 ### Example of output
 ```buildoutcfg
-$ python3.8 scanvus.py --assessment-type "docker_image" --docker-image "python:3.9.6-slim-bullseye" 
+$ python3 scanvus.py --assessment-type "docker_image" --docker-image "python:3.9.6-slim-bullseye" 
   /$$$$$$$  /$$$$$$$  /$$$$$$  /$$$$$$$  /$$    /$$/$$   /$$  /$$$$$$$
  /$$_____/ /$$_____/ |____  $$| $$__  $$|  $$  /$$/ $$  | $$ /$$_____/
 |  $$$$$$ | $$        /$$$$$$$| $$  \ $$ \  $$/$$/| $$  | $$|  $$$$$$ 
@@ -65,23 +72,29 @@ Vulnerability Report for python:3.9.6-slim-bullseye (docker_image, debian 11, 10
 |   |        |                         |                |    libssl1.1 1.1.1k-1 amd64 < 1.1.1k-1+deb11u1     |
 +---+--------+-------------------------+----------------+----------------------------------------------------+
 ```
+
+### Installation 
+```ignorelang
+pip3 install -r requirements.txt
+```
+
 ### Options
 ```buildoutcfg
-$ python3.8 scanvus.py -h
+$ python3 scanvus.py -h
   /$$$$$$$  /$$$$$$$  /$$$$$$  /$$$$$$$  /$$    /$$/$$   /$$  /$$$$$$$
  /$$_____/ /$$_____/ |____  $$| $$__  $$|  $$  /$$/ $$  | $$ /$$_____/
 |  $$$$$$ | $$        /$$$$$$$| $$  \ $$ \  $$/$$/| $$  | $$|  $$$$$$ 
  \____  $$| $$       /$$__  $$| $$  | $$  \  $$$/ | $$  | $$ \____  $$
  /$$$$$$$/|  $$$$$$$|  $$$$$$$| $$  | $$   \  $/  |  $$$$$$/ /$$$$$$$/
 |_______/  \_______/ \_______/|__/  |__/    \_/    \______/ |_______/ 
-usage: scanvus.py [-h] [--audit-service {vulners,vulnsio}] [--assessment-type ASSESSMENT_TYPE] [--host HOST] [--user-name USER_NAME] [--key-path KEY_PATH] [--docker-image DOCKER_IMAGE]
-                  [--show-inventory-script] [--inventory-file-path INVENTORY_FILE_PATH] [--save-os-data-text-block-path SAVE_OS_DATA_TEXT_BLOCK_PATH]
+usage: scanvus.py [-h] [--audit-service {vulners,vulnsio}] [--assessment-type ASSESSMENT_TYPE] [--host HOST] [--user-name USER_NAME] [--key-path KEY_PATH] [--password PASSWORD]
+                  [--docker-image DOCKER_IMAGE] [--show-inventory-script] [--inventory-file-path INVENTORY_FILE_PATH] [--save-os-data-text-block-path SAVE_OS_DATA_TEXT_BLOCK_PATH]
                   [--save-os-data-json-path SAVE_OS_DATA_JSON_PATH] [--save-vuln-raw-json-path SAVE_VULN_RAW_JSON_PATH] [--save-vuln-report-json-path SAVE_VULN_REPORT_JSON_PATH]
                   [--save-vuln-report-text-path SAVE_VULN_REPORT_TEXT_PATH]
 
 Scanvus is a Simple Credentialed Authenticated Network VUlnerability Scanner for Linux systems and docker images
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   --audit-service {vulners,vulnsio}
                         Audit API service:"vulners" (default) - https://vulners.com, "vulnsio" - https://vulns.io
@@ -91,6 +104,7 @@ optional arguments:
   --user-name USER_NAME
                         Username to authenticate on remote host
   --key-path KEY_PATH   Path to the private key file to authenticate on remote host
+  --password PASSWORD   User password or private key passphrase to authenticate on remote host
   --docker-image DOCKER_IMAGE
                         Docker image
   --show-inventory-script

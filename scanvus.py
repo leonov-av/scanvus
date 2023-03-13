@@ -107,7 +107,7 @@ elif args.assessment_type:
         }
         if args.key_path:
             target["key_path"] = args.key_path
-        if args.key_path:
+        if args.password:
             target["password"] = args.password
     elif args.assessment_type == "localhost":
         target = {
@@ -125,7 +125,7 @@ elif args.assessment_type:
             "inventory_file": args.inventory_file_path
         }
     for key in target:
-        print("  " + key + ": " + target[key])
+        print("  " + str(key) + ": " + str(target[key]))
     print("Getting OS inventory data...")
 
     if args.audit_service == 'vulnsio':
